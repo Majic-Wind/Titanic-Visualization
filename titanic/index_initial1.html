@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+
+  <style>
+    
+    h2{text-align:center;}
+    svg{position: absolute;left: 50%;margin-left: -400px;}
+    button{margin-left:70%;position: absolute;left: 150px;width:100px;height:32px;line-height:28px;text-align:center;px;top: 270px;}
+  </style>
+    <script type="text/javascript">
+      function draw(data) {
+      
+          "use strict";
+          var x, y,myChart,s;
+          var margin = 150,
+              width = 800 - margin,
+              height = 550 - margin;
+          
+          var h2 = d3.select("body").append("h2").text("Survive situation of Titanic personnel");
+
+          var svg = d3.select("body")
+            .append("svg")
+              .attr("width", width + margin)
+              .attr("height", height + margin)
+            .append('g')
+                .attr('class','chart');
+          d3.select("body").append('button');
+          d3.select('button').text('Change').attr('sex','sex');
+          console.log(d3.select('button'));
+
+          
+      /*
+        Dimple.js Chart construction code
+        同时封装表格的方法
+      */
+          function mychar(argx){
+              svg.html('');
+              var myChart = new dimple.chart(svg, data);
+              x = myChart.addCategoryAxis("x", ["Survival",argx]);
+              x.fontSize = "auto"
+              x.addGroupOrderRule(argx);
+
+              y = myChart.addMeasureAxis("y","Number");
+              y.title = "Number";
+              y.fontSize = "auto"
+              var s = myChart.addSeries("Ticket Class",dimple.plot.bar);
+              s.addOrderRule('Ticket Class')
+              myChart.addLegend(400, 20, 300, 20, "right");
+              
+              myChart.draw();
+          }
+          //初始化
+          mychar('Sex');
+          //click事件
+          d3.select('button').on('click',function(){
+            if(d3.select('button').attr('sex')){
+              d3.select('button').attr('child','child').attr('sex','');
+              svg.html('');
+              mychar('Adult or Child')
+            }else if(d3.select('button').attr('child')){
+            // d3.select('button').attr('child','child');
+              d3.select('button').attr('child','').attr('sex','sex');
+              svg.html('');
+              mychar('Sex');
+            }
+            
+          });
+        };
+      </script>
+  </head>
+<body>
+  <script type="text/javascript">
+  /*
+    Use D3 (not dimple.js) to load the CSV file
+    and pass the contents of it to the draw function
+    */
+  d3.csv("titanic_data2.csv", draw);
+  </script>
+</body>
+</html>
