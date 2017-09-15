@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <script src="http://dimplejs.org/dist/dimple.v2.0.0.min.js"></script>
+  
+  <style>
+    
+    h2{margin-left: 150px;}
+    svg{position: absolute;}
+    button{position: absolute;left: 750px;width:100px;height:32px;line-height:28px;text-align:center;px;top: 270px;}
+    ul{
+      list-style: none;
+      padding: 10px;
+      width: 400px;
+      height: 200px;
+      background: #86e4a7;
+      position: absolute;
+      left: 880px;
+      top: 140px;
+    }
+
+    li{
+      word-wrap: break-word;
+    }
+  </style>
+    
+  </head>
+<body>
+<h2>Survive situation of Titanic personnel</h2>
+  <svg></svg>
+  <button></button>
+  <ul>
+    <li>1、这个可视化图表呈现了泰坦尼克事故中，男性女性，成人儿童，和不同舱位的等级的死亡数对比情况。点击change按钮切换可切换类别。</li>
+    <li>2、鼠标悬浮在柱形图上即看查看不同分组的信息。</li>
+    <li>3、颜色反应了不同舱位等级，从低到高依次为3rd<2nd<1st。</li>
+    <li>4、年龄低于14岁划分为儿童，其中有177人的年龄数据缺失，即unknown组。</li>
+    <li></li>
+    <li></li>
+  </ul>
+  <script type="text/javascript">
+      function draw(data) {
+      
+          "use strict";
+          var x, y,myChart,s;
+          var margin = 150,
+              width = 800 - margin,
+              height = 550 - margin;
+
+          var svg = d3.select("svg")
+              .attr("width", width + margin)
+              .attr("height", height + margin)
+            .append('g')
+                .attr('class','chart');
+          // d3.select("body").append('button');
+          d3.select('button').text('Change').attr('sex','sex');
+          console.log(d3.select('button'));
+
+          
+      /*
+        Dimple.js Chart construction code
+        同时封装表格的方法
+      */
+          function mychar(argx){
+              svg.html('');
+              var myChart = new dimple.chart(svg, data);
+              x = myChart.addCategoryAxis("x", ["Survival",argx]);
+              x.fontSize = "auto"
+              x.addGroupOrderRule(argx);
+
+              y = myChart.addMeasureAxis("y","Number");
+              y.title = "Number";
+              y.fontSize = "auto"
+              var s = myChart.addSeries("Ticket Class",dimple.plot.bar);
+              s.addOrderRule('Ticket Class')
+              myChart.addLegend(400, 20, 300, 20, "right");
+              
+              myChart.draw();
+          }
+          //初始化
+          mychar('Sex');
+          //click事件
+          d3.select('button').on('click',function(){
+            if(d3.select('button').attr('sex')){
+              d3.select('button').attr('child','child').attr('sex','');
+              svg.html('');
+              mychar('Adult or Child')
+            }else if(d3.select('button').attr('child')){
+            // d3.select('button').attr('child','child');
+              d3.select('button').attr('child','').attr('sex','sex');
+              svg.html('');
+              mychar('Sex');
+            }
+            
+          });
+        };
+      </script>
+  <script type="text/javascript">
+  /*
+    Use D3 (not dimple.js) to load the CSV file
+    and pass the contents of it to the draw function
+    */
+  d3.csv("titanic_data2.csv", draw);
+  </script>
+</body>
+</html>
