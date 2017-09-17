@@ -60,22 +60,58 @@
           
       /*
         Dimple.js Chart construction code
-        同时封装表格的方法
+        从draw后提取rect的id名，作为各分组标签
       */
+     function regTxt(name){
+     	var _str = name.split('/');
+     	var _index = name.indexOf('/')+1;
+     	var _lastIndex = name.indexOf('__');
+     	var _name = name.substring(_index,_lastIndex);
+     	return _name;
+     }
+     //封装表格方法
           function mychar(argx){
               svg.html('');
               var myChart = new dimple.chart(svg, data);
               x = myChart.addCategoryAxis("x", ["Survival",argx]);
               x.fontSize = "auto"
               x.addGroupOrderRule(argx);
+              
 
               y = myChart.addMeasureAxis("y","Number");
               y.title = "Number";
               y.fontSize = "auto"
               var s = myChart.addSeries("Ticket Class",dimple.plot.bar);
+              //var xAxis = myChart.addCategoryAxis("x", ["Survival",argx]);
+      		  //s.x = xAxis;
               s.addOrderRule('Ticket Class')
               myChart.addLegend(400, 20, 300, 20, "right");
-              
+              //afterdraw 后，在柱形图上添加标签
+              s.afterDraw = function (shape, data) {
+				// Get the shape as a d3 selection
+				var s = d3.select(shape),
+				rect = {
+				x: parseFloat(s.attr("x")),
+				y: parseFloat(s.attr("y")),
+				width: parseFloat(s.attr("width")),
+				height: parseFloat(s.attr("height")),
+				name: s.attr('id')
+				};
+				console.log(rect.name.indexOf('3rd'));
+			    if (rect.name.indexOf('3rd')>=0) {
+                svg.append("text")
+          	    .attr("x",rect.x+rect.width/2)
+            	.attr("y", rect.y-10)
+            	.attr("dy", "0.35em")
+            	.style("text-anchor", "middle")
+            	.style("font-size", "15px")
+            	.style("font-family", "sans-serif")
+            	.style("opacity", 0.8)
+           	    .attr("dy", "0.35em")
+            	.text(regTxt(rect.name));
+				};
+				}
+			   
               myChart.draw();
           }
           //初始化
